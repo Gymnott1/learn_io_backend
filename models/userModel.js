@@ -40,7 +40,15 @@ const userSchema = new mongoose.Schema({
     is_deleted: {
         type: Boolean,
         default: false
-    }
+    },
+    passwordResetCode: {
+        type: String,
+        default: "4444",
+      },
+      passwordResetExpires: {
+        type: Date,
+        default: Date.now() + 3600000, // 1 hour
+      },
 });
 
 // Encrypt password before saving

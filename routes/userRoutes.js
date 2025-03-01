@@ -282,6 +282,11 @@ router.delete('/users/:id', authenticateUser, authorizeRoles('admin'), userContr
  *       500:
  *         description: Server error.
  */
-router.post('/users/changePassword', authenticateUser, authorizeRoles('admin', 'staff'), userController.changePassword);
-
+router.post(
+    "/users/changePassword",
+    authenticateUser,
+    authorizeRoles("admin", "staff"),
+    userController.changePassword
+  );
+  
 module.exports = router;
