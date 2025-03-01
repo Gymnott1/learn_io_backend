@@ -184,3 +184,41 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword, newPasswordConfirm } = req.body;
+
+    // Validate required fields
+    if (!email || !oldPassword || !newPassword || !newPasswordConfirm) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if the new passwords match
+    if (newPassword !== newPasswordConfirm) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User Not Found' });
+    }
+
+    // Compare the provided old password with the stored hashed password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    // Hash the new password and update the user document
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

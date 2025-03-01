@@ -232,6 +232,56 @@ router.get('/users', authenticateUser, authorizeRoles('admin'), userController.g
  *         description: Server error
  */
 router.patch('/users/:id', authenticateUser, authorizeRoles('admin', 'staff'), userController.updateUser);
+
 router.delete('/users/:id', authenticateUser, authorizeRoles('admin'), userController.deleteUser);
+/**
+ * @swagger
+ * /api/users/changePassword:
+ *   post:
+ *     summary: Change user password
+ *     description: Allows a user to change their password by verifying the old password, entering a verification code sent to their email, and updating to a new password.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []  # Requires JWT authentication if enabled
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - oldPassword
+ *               - newPassword
+ *               - newPasswordConfirm
+ *               - verificationCode
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email address.
+ *               oldPassword:
+ *                 type: string
+ *                 description: The current password.
+ *               newPassword:
+ *                 type: string
+ *                 description: The new password.
+ *               newPasswordConfirm:
+ *                 type: string
+ *                 description: Confirmation of the new password.
+ *               verificationCode:
+ *                 type: string
+ *                 description: The verification code sent to the user's email.
+ *     responses:
+ *       200:
+ *         description: Password changed successfully.
+ *       400:
+ *         description: Bad request (e.g., missing fields, passwords do not match, or invalid/expired verification code).
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Server error.
+ */
+router.post('/users/changePassword', authenticateUser, authorizeRoles('admin', 'staff'), userController.changePassword);
 
 module.exports = router;
